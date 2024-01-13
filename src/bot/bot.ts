@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import { Bot, GrammyError, HttpError } from 'grammy';
-import { logger } from '../utils/logger/logger.js';
+import { logger } from '../utils/logger/logger';
 
-export const bot = new Bot(process.env.BOT_TOKEN);
+export const bot = new Bot(process.env.BOT_TOKEN as string);
 
 bot.command('start', async (ctx) => {
-  await ctx.reply(`Hello ${ctx.chat.first_name}`);
+  await ctx.reply(`Hello ${ctx.from?.first_name}`);
 });
 
 bot.catch((err) => {
