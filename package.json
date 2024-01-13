@@ -1,0 +1,38 @@
+{
+  "name": "simple-interview-bot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app/index.js",
+    "start": "node app/index.js",
+    "format": "npx prettier . --write && npx eslint . --fix",
+    "lint": "npx prettier . --check && npx eslint . --check",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "app/*.js": [
+      "npx prettier --write --ignore-unknown",
+      "npx eslint --fix"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.0",
+    "nodemon": "^3.0.2",
+    "prettier": "3.2.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "grammy": "^1.20.3",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1"
+  }
+}
