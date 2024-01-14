@@ -136,4 +136,4 @@ package-lock.json
 dist
 
 # sqlite3 db
-simple-interview-bot.db
+simple-interview-bot.sqlite
