@@ -38,6 +38,7 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
+    "@grammyjs/conversations": "^1.2.0",
     "dotenv": "^16.3.1",
     "grammy": "^1.20.3",
     "pino": "^8.17.2",
