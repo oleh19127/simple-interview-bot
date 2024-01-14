@@ -7,7 +7,7 @@ export class Theme {
   themeId: number;
 
   @Column()
-  name: string;
+  themeName: string;
 
   @OneToMany(() => Question, (question) => question.theme)
   questions: Question[];
