@@ -5,7 +5,7 @@ import { Option } from './entity/Option';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
-  database: './simple-interview-bot.db',
+  database: './simple-interview-bot.sqlite',
   synchronize: true,
   logging: true,
   entities: [Theme, Question, Option],
