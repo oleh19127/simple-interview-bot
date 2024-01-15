@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.ts",
     "start": "npm run build:ts && node dist/index.js",
     "format": "npx prettier . --write && npx eslint . --fix",
-    "lint": "npx prettier . --check && npx eslint . --check",
+    "lint": "npx prettier . --check && npx eslint .",
     "prepare": "husky install"
   },
   "keywords": [],
