@@ -1,13 +1,6 @@
 import 'dotenv/config';
 
-import {
-  Bot,
-  Context,
-  GrammyError,
-  HttpError,
-  Keyboard,
-  session,
-} from 'grammy';
+import { Bot, Context, GrammyError, HttpError, session } from 'grammy';
 
 import {
   type Conversation,
@@ -18,6 +11,7 @@ import {
 
 import { logger } from '../utils/logger/logger';
 import { themeService } from '../services/ThemeService';
+import { showAllThemeKeyboard } from './keyboard/showAllThemeKeyboard';
 
 type MyContext = Context & ConversationFlavor;
 type MyConversation = Conversation<MyContext>;
@@ -27,11 +21,15 @@ export const bot = new Bot<MyContext>(process.env.BOT_TOKEN as string);
 bot.api.setMyCommands([
   {
     command: 'start',
-    description: 'Start the bot',
+    description: 'Start the bot and show themes to repeat',
   },
   {
     command: 'add_theme',
-    description: 'Add the theme, you want to repeat',
+    description: 'Add the theme',
+  },
+  {
+    command: 'delete_theme',
+    description: 'Delete the theme',
   },
 ]);
 
@@ -48,27 +46,44 @@ async function addThemeConversation(
   await ctx.reply(result);
 }
 
+async function deleteThemeConversion(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const result = await showAllThemeKeyboard();
+  if (typeof result === 'string') {
+    return await ctx.reply(result);
+  }
+  await ctx.reply(`What theme do you want to delete?`, {
+    reply_markup: result.toFlowed(3).oneTime(true),
+  });
+  const { message } = await conversation.wait();
+  const deletedResult = await themeService.deleteTheme(message?.text as string);
+  await ctx.reply(deletedResult);
+}
+
 bot.use(createConversation(addThemeConversation));
+bot.use(createConversation(deleteThemeConversion));
 
 bot.command('start', async (ctx) => {
-  const allThemes = await themeService.getAllThemes();
-  if (allThemes.length === 0) {
-    return await ctx.reply('No themes to display');
-  }
-  const startKeyboard = new Keyboard().resized();
-  for (const theme of allThemes) {
-    startKeyboard.add(theme.themeName);
+  const result = await showAllThemeKeyboard();
+  if (typeof result === 'string') {
+    return await ctx.reply(result);
   }
   await ctx.reply(
-    `Hello ${ctx.from?.first_name},\n What theme do you want to repeat?`,
+    `Hello ${ctx.from?.first_name},\nWhat theme do you want to repeat?`,
     {
-      reply_markup: startKeyboard.toFlowed(3),
+      reply_markup: result.toFlowed(3).oneTime(true),
     },
   );
 });
 
 bot.command('add_theme', async (ctx) => {
   await ctx.conversation.enter('addThemeConversation');
+});
+
+bot.command('delete_theme', async (ctx) => {
+  await ctx.conversation.enter('deleteThemeConversion');
 });
 
 bot.catch((err) => {

@@ -6,23 +6,44 @@ class ThemeService {
   private themeServiceRepository = AppDataSource.getRepository(Theme);
 
   async createTheme(themeName: string): Promise<string> {
-    const candidateName = await this.themeServiceRepository.exists({
-      where: { themeName },
+    themeName = themeName.toUpperCase();
+    const candidateName = await this.themeServiceRepository.existsBy({
+      themeName,
     });
     if (candidateName) {
-      logger.info(`${themeName} already exist`);
-      return `"${themeName}" already exist`;
+      logger.info(`Theme: "${themeName}" already exist`);
+      return `Theme: "${themeName}" already exist`;
     }
     const newThemeName = new Theme();
     newThemeName.themeName = themeName;
     await this.themeServiceRepository.save(newThemeName);
-    logger.info(`"${themeName}" successfully saved`);
-    return `"${themeName}" successfully saved`;
+    logger.info(`Theme: "${themeName}" successfully saved`);
+    return `Theme: "${themeName}" successfully saved`;
   }
 
   async getAllThemes(): Promise<Theme[]> {
     const allThemes = await this.themeServiceRepository.find();
     return allThemes;
+  }
+
+  async deleteTheme(themeName: string): Promise<string> {
+    themeName = themeName.toUpperCase();
+    const candidateThemeToDelete = await this.themeServiceRepository.existsBy({
+      themeName,
+    });
+    if (!candidateThemeToDelete) {
+      logger.info(`Theme: "${themeName}" does not exist`);
+      return `Theme: "${themeName}" does not exist`;
+    }
+    const destroyedTheme = await this.themeServiceRepository.delete({
+      themeName,
+    });
+    if (destroyedTheme.affected === 1) {
+      logger.info(`Theme: "${themeName}" successfully deleted`);
+      return `Theme: "${themeName}" successfully deleted`;
+    }
+    logger.info('Something went wrong');
+    return 'Something went wrong';
   }
 }
 
