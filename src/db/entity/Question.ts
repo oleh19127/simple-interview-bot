@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -14,11 +15,14 @@ export class Question {
   questionId: number;
 
   @Column()
-  text: string;
+  questionText: string;
 
   @ManyToOne(() => Theme, (theme) => theme.questions)
   theme: Theme;
 
-  @OneToMany(() => Option, (option) => option.question)
+  @OneToMany(() => Option, (option) => option.question, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
   options: Option[];
 }

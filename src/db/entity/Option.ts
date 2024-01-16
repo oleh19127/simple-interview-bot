@@ -7,7 +7,7 @@ export class Option {
   optionId: number;
 
   @Column()
-  text: string;
+  optionText: string;
 
   @Column()
   isCorrect: boolean;

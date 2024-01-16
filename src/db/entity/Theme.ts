@@ -6,9 +6,11 @@ export class Theme {
   @PrimaryGeneratedColumn()
   themeId: number;
 
-  @Column()
+  @Column({ unique: true })
   themeName: string;
 
-  @OneToMany(() => Question, (question) => question.theme)
+  @OneToMany(() => Question, (question) => question.theme, {
+    onDelete: 'CASCADE',
+  })
   questions: Question[];
 }
