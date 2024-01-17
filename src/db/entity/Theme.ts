@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Question } from './Question';
 
 @Entity()
@@ -12,5 +18,6 @@ export class Theme {
   @OneToMany(() => Question, (question) => question.theme, {
     onDelete: 'CASCADE',
   })
+  @JoinTable()
   questions: Question[];
 }
