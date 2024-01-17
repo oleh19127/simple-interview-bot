@@ -8,7 +8,7 @@ import {
 } from '@grammyjs/conversations';
 import { logger } from '../utils/logger/logger';
 import { themeService } from '../services/ThemeService';
-import { showAllThemeKeyboard } from './keyboard/showAllThemeKeyboard';
+import { generateKeyboard } from './keyboard/showAllThemeKeyboard';
 import { questionService } from '../services/QuestionService';
 import { optionService } from '../services/OptionService';
 
@@ -59,7 +59,10 @@ async function deleteThemeConversion(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
-  const result = await showAllThemeKeyboard();
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const result = await generateKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -77,7 +80,10 @@ async function updateThemeConversion(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
-  const result = await showAllThemeKeyboard();
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const result = await generateKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -97,7 +103,10 @@ async function addQuestionConversation(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
-  const result = await showAllThemeKeyboard();
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const result = await generateKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -142,22 +151,30 @@ async function addQuestionConversation(
   }
 }
 
-bot.use(createConversation(addThemeConversation));
-bot.use(createConversation(deleteThemeConversion));
-bot.use(createConversation(updateThemeConversion));
-bot.use(createConversation(addQuestionConversation));
-
-bot.command('start', async (ctx) => {
-  const result = await showAllThemeKeyboard();
+async function startConversation(conversation: MyConversation, ctx: MyContext) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const result = await generateKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(`Hello ${ctx.from?.first_name}\n${result}`);
   }
-  await ctx.reply(
+  return await ctx.reply(
     `Hello ${ctx.from?.first_name},\nWhat theme do you want to repeat?`,
     {
       reply_markup: result.toFlowed(3).oneTime(true),
     },
   );
+}
+
+bot.use(createConversation(addThemeConversation));
+bot.use(createConversation(deleteThemeConversion));
+bot.use(createConversation(updateThemeConversion));
+bot.use(createConversation(addQuestionConversation));
+bot.use(createConversation(startConversation));
+
+bot.command('start', async (ctx) => {
+  await ctx.conversation.enter('startConversation');
 });
 
 bot.command('add_theme', async (ctx) => {
