@@ -17,6 +17,9 @@ export class Question {
   @Column()
   questionText: string;
 
+  @Column()
+  themeThemeId: number;
+
   @ManyToOne(() => Theme, (theme) => theme.questions, {
     onDelete: 'CASCADE',
   })

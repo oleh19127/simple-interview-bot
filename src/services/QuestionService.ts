@@ -28,6 +28,7 @@ class QuestionService {
     }
     const question = new Question();
     question.questionText = text;
+    question.themeThemeId = theme.themeId;
     await this.questionServiceRepository.save(question);
     theme.questions.push(question);
     await this.themeServiceRepository.save(theme);
@@ -36,8 +37,10 @@ class QuestionService {
     return { resultMessage, questionId: question.questionId };
   }
 
-  async getAllQuestions(): Promise<Question[]> {
+  async getAllThemeQuestions(themeName: string): Promise<Question[]> {
+    const theme = await this.themeServiceRepository.findOneBy({ themeName });
     return await this.questionServiceRepository.find({
+      where: { themeThemeId: theme?.themeId },
       relations: ['options'],
     });
   }

@@ -25,6 +25,7 @@ class OptionService {
     const option = new Option();
     option.isCorrect = isCorrect;
     option.optionText = optionText;
+    option.questionQuestionId = question.questionId;
     await this.optionServiceRepository.save(option);
     question.options.push(option);
     await this.questionServiceRepository.save(question);

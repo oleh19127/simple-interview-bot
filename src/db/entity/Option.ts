@@ -12,6 +12,9 @@ export class Option {
   @Column()
   isCorrect: boolean;
 
+  @Column()
+  questionQuestionId: number;
+
   @ManyToOne(() => Question, (question) => question.options, {
     onDelete: 'CASCADE',
   })

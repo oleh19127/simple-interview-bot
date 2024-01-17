@@ -8,9 +8,10 @@ import {
 } from '@grammyjs/conversations';
 import { logger } from '../utils/logger/logger';
 import { themeService } from '../services/ThemeService';
-import { generateKeyboard } from './keyboard/showAllThemeKeyboard';
+import { generateThemeKeyboard } from './keyboard/generateThemeKeyboard';
 import { questionService } from '../services/QuestionService';
 import { optionService } from '../services/OptionService';
+import { generateQuestionKeyboard } from './keyboard/generateQuestionKeyboard';
 
 type MyContext = Context & ConversationFlavor;
 type MyConversation = Conversation<MyContext>;
@@ -38,6 +39,10 @@ bot.api.setMyCommands([
     command: 'add_question',
     description: 'Add question and options to theme',
   },
+  {
+    command: 'update_question',
+    description: 'Update question',
+  },
 ]);
 
 bot.use(session({ initial: () => ({}) }));
@@ -62,7 +67,7 @@ async function deleteThemeConversion(
   const allThemes = await conversation.external(() => {
     return themeService.getAllThemes();
   });
-  const result = await generateKeyboard(allThemes);
+  const result = await generateThemeKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -83,7 +88,7 @@ async function updateThemeConversion(
   const allThemes = await conversation.external(() => {
     return themeService.getAllThemes();
   });
-  const result = await generateKeyboard(allThemes);
+  const result = await generateThemeKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -99,6 +104,7 @@ async function updateThemeConversion(
   });
   await ctx.reply(updateResult);
 }
+
 async function addQuestionConversation(
   conversation: MyConversation,
   ctx: MyContext,
@@ -106,7 +112,7 @@ async function addQuestionConversation(
   const allThemes = await conversation.external(() => {
     return themeService.getAllThemes();
   });
-  const result = await generateKeyboard(allThemes);
+  const result = await generateThemeKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(result);
   }
@@ -115,9 +121,10 @@ async function addQuestionConversation(
   });
   const theme = (await conversation.waitFor('message:text')).message.text;
   await ctx.reply('Write new question');
-  const newQuestionFromUser = await conversation.waitFor('message:text');
+  const newQuestionFromUser = (await conversation.waitFor('message:text'))
+    .message.text;
   const responseNewQuestion = await conversation.external(() => {
-    return questionService.addQuestion(theme, newQuestionFromUser.message.text);
+    return questionService.addQuestion(theme, newQuestionFromUser);
   });
   if (typeof responseNewQuestion === 'string') {
     return await ctx.reply(responseNewQuestion);
@@ -155,7 +162,7 @@ async function startConversation(conversation: MyConversation, ctx: MyContext) {
   const allThemes = await conversation.external(() => {
     return themeService.getAllThemes();
   });
-  const result = await generateKeyboard(allThemes);
+  const result = await generateThemeKeyboard(allThemes);
   if (typeof result === 'string') {
     return await ctx.reply(`Hello ${ctx.from?.first_name}\n${result}`);
   }
@@ -167,11 +174,52 @@ async function startConversation(conversation: MyConversation, ctx: MyContext) {
   );
 }
 
+async function updateQuestionConversation(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const allThemesKeyboard = await generateThemeKeyboard(allThemes);
+  if (typeof allThemesKeyboard === 'string') {
+    return await ctx.reply(allThemesKeyboard);
+  }
+  await ctx.reply(`For which theme do you want to update a question?`, {
+    reply_markup: allThemesKeyboard.toFlowed(3).oneTime(true),
+  });
+  const theme = (await conversation.waitFor('message:text')).message.text;
+  const allThemeQuestions = await conversation.external(() => {
+    return questionService.getAllThemeQuestions(theme);
+  });
+  const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
+  if (typeof allQuestionKeyboard === 'string') {
+    return await ctx.reply(allQuestionKeyboard);
+  }
+  await ctx.reply(`Which question do you want to update?`, {
+    reply_markup: allQuestionKeyboard.toFlowed(1).oneTime(true),
+  });
+  const questionToUpdate = (await conversation.waitFor('message:text')).message
+    .text;
+  await ctx.reply('Write new question');
+  const newQuestionToUpdate = (await conversation.waitFor('message:text'))
+    .message.text;
+
+  const questionUpdateResult = await conversation.external(() => {
+    return questionService.updateQuestion(
+      questionToUpdate,
+      newQuestionToUpdate,
+    );
+  });
+  await ctx.reply(questionUpdateResult);
+}
+
 bot.use(createConversation(addThemeConversation));
 bot.use(createConversation(deleteThemeConversion));
 bot.use(createConversation(updateThemeConversion));
 bot.use(createConversation(addQuestionConversation));
 bot.use(createConversation(startConversation));
+bot.use(createConversation(updateQuestionConversation));
 
 bot.command('start', async (ctx) => {
   await ctx.conversation.enter('startConversation');
@@ -190,8 +238,11 @@ bot.command('update_theme', async (ctx) => {
 });
 
 bot.command('add_question', async (ctx) => {
-  logger.info('Before conversation');
   await ctx.conversation.enter('addQuestionConversation');
+});
+
+bot.command('update_question', async (ctx) => {
+  await ctx.conversation.enter('updateQuestionConversation');
 });
 
 bot.catch((err) => {
