@@ -30,25 +30,17 @@ class ThemeService {
 
   async deleteTheme(themeName: string): Promise<string> {
     themeName = themeName.toUpperCase();
-    const candidateThemeToDelete = await this.themeServiceRepository.existsBy({
+    const destroyedTheme = await this.themeServiceRepository.delete({
       themeName,
     });
-    if (!candidateThemeToDelete) {
+    if (destroyedTheme.affected === 0) {
       const doesNotExistMessage = `Theme: "${themeName}" does not exist`;
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }
-    const destroyedTheme = await this.themeServiceRepository.delete({
-      themeName,
-    });
-    if (destroyedTheme.affected === 1) {
-      const okDeleted = `Theme: "${themeName}" successfully deleted`;
-      logger.info(okDeleted);
-      return okDeleted;
-    }
-    const resultMessage = 'Something went wrong';
-    logger.info(resultMessage);
-    return resultMessage;
+    const okDeleted = `Theme: "${themeName}" successfully deleted`;
+    logger.info(okDeleted);
+    return okDeleted;
   }
 
   async updateTheme(themeName: string, newThemeName: string): Promise<string> {
