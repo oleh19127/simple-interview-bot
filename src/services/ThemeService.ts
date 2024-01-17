@@ -24,7 +24,9 @@ class ThemeService {
   }
 
   async getAllThemes(): Promise<Theme[]> {
-    const allThemes = await this.themeServiceRepository.find();
+    const allThemes = await this.themeServiceRepository.find({
+      relations: ['questions'],
+    });
     return allThemes;
   }
 

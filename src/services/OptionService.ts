@@ -32,6 +32,50 @@ class OptionService {
     logger.info(resultMessage);
     return resultMessage;
   }
+  async getQuestionOptions(questionText: string): Promise<string | Option[]> {
+    const question = await this.questionServiceRepository.findOne({
+      where: {
+        questionText,
+      },
+      relations: ['options'],
+    });
+    if (question === null) {
+      const doesNotExist = `Question: "${questionText}" does not exist`;
+      logger.info(doesNotExist);
+      return doesNotExist;
+    }
+    return question.options;
+  }
+  async deleteOption(optionText: string): Promise<string> {
+    const deletedOption = await this.optionServiceRepository.delete({
+      optionText,
+    });
+    if (deletedOption.affected === 0) {
+      const doesNotExistMessage = `Option: "${optionText}" does not exist`;
+      logger.info(doesNotExistMessage);
+      return doesNotExistMessage;
+    }
+    const okDeleted = `Option: "${optionText}" successfully deleted`;
+    logger.info(okDeleted);
+    return okDeleted;
+  }
+
+  async updateOption(
+    optionText: string,
+    newOptionText: string,
+  ): Promise<string> {
+    const option = await this.optionServiceRepository.findOneBy({ optionText });
+    if (option === null) {
+      const doesNotExist = `Option: "${optionText}" does not exist`;
+      logger.info(doesNotExist);
+      return doesNotExist;
+    }
+    option.optionText = newOptionText;
+    await this.optionServiceRepository.save(option);
+    const resultMessage = `Option: from "${optionText}" to "${newOptionText}" successfully updated`;
+    logger.info(resultMessage);
+    return resultMessage;
+  }
 }
 
 export const optionService = new OptionService();

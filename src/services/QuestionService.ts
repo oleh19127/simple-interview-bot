@@ -41,6 +41,39 @@ class QuestionService {
       relations: ['options'],
     });
   }
+
+  async deleteQuestion(questionText: string): Promise<string> {
+    const deletedQuestion = await this.questionServiceRepository.delete({
+      questionText,
+    });
+    if (deletedQuestion.affected === 0) {
+      const doesNotExistMessage = `Question: "${questionText}" does not exist`;
+      logger.info(doesNotExistMessage);
+      return doesNotExistMessage;
+    }
+    const okDeleted = `Question: "${questionText}" successfully deleted`;
+    logger.info(okDeleted);
+    return okDeleted;
+  }
+
+  async updateQuestion(
+    questionText: string,
+    newQuestionText: string,
+  ): Promise<string> {
+    const question = await this.questionServiceRepository.findOneBy({
+      questionText,
+    });
+    if (question === null) {
+      const doesNotExist = `Question: "${questionText}" does not exist`;
+      logger.info(doesNotExist);
+      return doesNotExist;
+    }
+    question.questionText = newQuestionText;
+    await this.questionServiceRepository.save(question);
+    const resultMessage = `Question: from "${questionText}" to "${newQuestionText}" successfully updated`;
+    logger.info(resultMessage);
+    return resultMessage;
+  }
 }
 
 export const questionService = new QuestionService();
