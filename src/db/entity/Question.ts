@@ -17,12 +17,12 @@ export class Question {
   @Column()
   questionText: string;
 
-  @ManyToOne(() => Theme, (theme) => theme.questions)
-  theme: Theme;
-
-  @OneToMany(() => Option, (option) => option.question, {
+  @ManyToOne(() => Theme, (theme) => theme.questions, {
     onDelete: 'CASCADE',
   })
+  theme: Theme;
+
+  @OneToMany(() => Option, (option) => option.question)
   @JoinTable()
   options: Option[];
 }

@@ -15,9 +15,7 @@ export class Theme {
   @Column({ unique: true })
   themeName: string;
 
-  @OneToMany(() => Question, (question) => question.theme, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => Question, (question) => question.theme)
   @JoinTable()
   questions: Question[];
 }
