@@ -49,7 +49,9 @@ async function addThemeConversation(
 ) {
   await ctx.reply('What theme do you want to add?');
   const { message } = await conversation.wait();
-  const result = await themeService.createTheme(message?.text as string);
+  const result = await conversation.external(() => {
+    return themeService.createTheme(message?.text as string);
+  });
   await ctx.reply(result);
 }
 
@@ -65,7 +67,9 @@ async function deleteThemeConversion(
     reply_markup: result.toFlowed(3).oneTime(true),
   });
   const { message } = await conversation.wait();
-  const deletedResult = await themeService.deleteTheme(message?.text as string);
+  const deletedResult = await conversation.external(() => {
+    return themeService.deleteTheme(message?.text as string);
+  });
   await ctx.reply(deletedResult);
 }
 
@@ -84,7 +88,9 @@ async function updateThemeConversion(
   await ctx.reply('Write new theme name');
   const newThemeName = (await conversation.waitFor('message:text')).message
     .text;
-  const updateResult = await themeService.updateTheme(existTheme, newThemeName);
+  const updateResult = await conversation.external(() => {
+    return themeService.updateTheme(existTheme, newThemeName);
+  });
   await ctx.reply(updateResult);
 }
 async function addQuestionConversation(
