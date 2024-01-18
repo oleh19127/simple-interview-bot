@@ -8,10 +8,11 @@ import {
 } from '@grammyjs/conversations';
 import { logger } from '../utils/logger/logger';
 import { themeService } from '../services/ThemeService';
-import { generateThemeKeyboard } from './keyboard/generateThemeKeyboard';
+import { generateThemeKeyboard } from './keyboards/generateThemeKeyboard';
 import { questionService } from '../services/QuestionService';
 import { optionService } from '../services/OptionService';
-import { generateQuestionKeyboard } from './keyboard/generateQuestionKeyboard';
+import { generateQuestionKeyboard } from './keyboards/generateQuestionKeyboard';
+import { generateOptionKeyboard } from './keyboards/generateOptionKeyboard';
 
 type MyContext = Context & ConversationFlavor;
 type MyConversation = Conversation<MyContext>;
@@ -28,12 +29,12 @@ bot.api.setMyCommands([
     description: 'Add the theme',
   },
   {
-    command: 'delete_theme',
-    description: 'Delete the theme',
-  },
-  {
     command: 'update_theme',
     description: 'Update the theme',
+  },
+  {
+    command: 'delete_theme',
+    description: 'Delete the theme',
   },
   {
     command: 'add_question',
@@ -42,6 +43,18 @@ bot.api.setMyCommands([
   {
     command: 'update_question',
     description: 'Update question',
+  },
+  {
+    command: 'delete_question',
+    description: 'Delete question',
+  },
+  {
+    command: 'add_option',
+    description: 'Add option',
+  },
+  {
+    command: 'update_option',
+    description: 'Update option',
   },
 ]);
 
@@ -57,7 +70,7 @@ async function addThemeConversation(
   const result = await conversation.external(() => {
     return themeService.createTheme(message?.text as string);
   });
-  await ctx.reply(result);
+  return await ctx.reply(result);
 }
 
 async function deleteThemeConversion(
@@ -78,7 +91,7 @@ async function deleteThemeConversion(
   const deletedResult = await conversation.external(() => {
     return themeService.deleteTheme(message?.text as string);
   });
-  await ctx.reply(deletedResult);
+  return await ctx.reply(deletedResult);
 }
 
 async function updateThemeConversion(
@@ -102,7 +115,7 @@ async function updateThemeConversion(
   const updateResult = await conversation.external(() => {
     return themeService.updateTheme(existTheme, newThemeName);
   });
-  await ctx.reply(updateResult);
+  return await ctx.reply(updateResult);
 }
 
 async function addQuestionConversation(
@@ -211,7 +224,159 @@ async function updateQuestionConversation(
       newQuestionToUpdate,
     );
   });
-  await ctx.reply(questionUpdateResult);
+  return await ctx.reply(questionUpdateResult);
+}
+
+async function deleteQuestionConversation(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const allThemesKeyboard = await generateThemeKeyboard(allThemes);
+  if (typeof allThemesKeyboard === 'string') {
+    return await ctx.reply(allThemesKeyboard);
+  }
+  await ctx.reply('For which theme do you want to delete a question?', {
+    reply_markup: allThemesKeyboard.toFlowed(3).oneTime(true),
+  });
+  const theme = (await conversation.waitFor('message:text')).message.text;
+  const allThemeQuestions = await conversation.external(() => {
+    return questionService.getAllThemeQuestions(theme);
+  });
+  const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
+  if (typeof allQuestionKeyboard === 'string') {
+    return await ctx.reply(allQuestionKeyboard);
+  }
+  await ctx.reply('Which question do you want to delete?', {
+    reply_markup: allQuestionKeyboard.toFlowed(1).oneTime(true),
+  });
+  const questionToDelete = (await conversation.waitFor('message:text')).message
+    .text;
+  const questionDeleteResult = await conversation.external(() => {
+    return questionService.deleteQuestion(questionToDelete);
+  });
+  return await ctx.reply(questionDeleteResult);
+}
+
+async function addOptionConversation(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const allThemesKeyboard = await generateThemeKeyboard(allThemes);
+  if (typeof allThemesKeyboard === 'string') {
+    return await ctx.reply(allThemesKeyboard);
+  }
+  await ctx.reply('To which theme do you want to add an answer option?', {
+    reply_markup: allThemesKeyboard.toFlowed(3).oneTime(true),
+  });
+  const theme = (await conversation.waitFor('message:text')).message.text;
+  const allThemeQuestions = await conversation.external(() => {
+    return questionService.getAllThemeQuestions(theme);
+  });
+  const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
+  if (typeof allQuestionKeyboard === 'string') {
+    return await ctx.reply(allQuestionKeyboard);
+  }
+  await ctx.reply('To which question do you want to add an answer option?', {
+    reply_markup: allQuestionKeyboard.toFlowed(1).oneTime(true),
+  });
+  const questionToAddOption = (await conversation.waitFor('message:text'))
+    .message.text;
+  const question = await conversation.external(() => {
+    return questionService.getOneQuestion(questionToAddOption);
+  });
+  if (typeof question === 'string') {
+    return await ctx.reply(question);
+  }
+  await ctx.reply('Write a new answer option');
+  const newAnswerOption = (await conversation.waitFor('message:text')).message
+    .text;
+  await ctx.reply('This option is correct?\nYes/No');
+  let isCorrect: string | boolean = (await conversation.waitFor('message:text'))
+    .message.text;
+  if (isCorrect.toLowerCase() === 'yes') {
+    isCorrect = true;
+  } else if (isCorrect.toLowerCase() === 'no') {
+    isCorrect = false;
+  } else {
+    return await ctx.reply('Your answer is not correct');
+  }
+  const addAnswerOptionResult = await conversation.external(() => {
+    return optionService.addOption(
+      newAnswerOption,
+      isCorrect as boolean,
+      question.questionId,
+    );
+  });
+  return await ctx.reply(addAnswerOptionResult);
+}
+
+async function updateOptionConversation(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const allThemesKeyboard = await generateThemeKeyboard(allThemes);
+  if (typeof allThemesKeyboard === 'string') {
+    return await ctx.reply(allThemesKeyboard);
+  }
+  await ctx.reply('To which theme do you want to update an answer option?', {
+    reply_markup: allThemesKeyboard.toFlowed(3).oneTime(true),
+  });
+  const theme = (await conversation.waitFor('message:text')).message.text;
+  const allThemeQuestions = await conversation.external(() => {
+    return questionService.getAllThemeQuestions(theme);
+  });
+  const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
+  if (typeof allQuestionKeyboard === 'string') {
+    return await ctx.reply(allQuestionKeyboard);
+  }
+  await ctx.reply('To which question do you want to update an answer option?', {
+    reply_markup: allQuestionKeyboard.toFlowed(1).oneTime(true),
+  });
+  const questionToUpdateOption = (await conversation.waitFor('message:text'))
+    .message.text;
+  const allQuestionOptions = await conversation.external(() => {
+    return optionService.getQuestionOptions(questionToUpdateOption);
+  });
+  if (typeof allQuestionOptions === 'string') {
+    return await ctx.reply(allQuestionOptions);
+  }
+  const allOptionKeyboard = await generateOptionKeyboard(allQuestionOptions);
+  if (typeof allOptionKeyboard === 'string') {
+    return await ctx.reply(allOptionKeyboard);
+  }
+  await ctx.reply('To which option do you want to update?', {
+    reply_markup: allOptionKeyboard.toFlowed(1).oneTime(true),
+  });
+  const exitOption = (await conversation.waitFor('message:text')).message.text;
+  await ctx.reply('Write new option');
+  const newOption = (await conversation.waitFor('message:text')).message.text;
+  await ctx.reply('This option is correct?\nYes/No');
+  let isCorrect: string | boolean = (await conversation.waitFor('message:text'))
+    .message.text;
+  if (isCorrect.toLowerCase() === 'yes') {
+    isCorrect = true;
+  } else if (isCorrect.toLowerCase() === 'no') {
+    isCorrect = false;
+  } else {
+    return await ctx.reply('Your answer is not correct');
+  }
+  const updateOptionResult = await conversation.external(() => {
+    return optionService.updateOption(
+      exitOption,
+      newOption,
+      isCorrect as boolean,
+    );
+  });
+  return await ctx.reply(updateOptionResult);
 }
 
 bot.use(createConversation(addThemeConversation));
@@ -220,6 +385,9 @@ bot.use(createConversation(updateThemeConversion));
 bot.use(createConversation(addQuestionConversation));
 bot.use(createConversation(startConversation));
 bot.use(createConversation(updateQuestionConversation));
+bot.use(createConversation(deleteQuestionConversation));
+bot.use(createConversation(addOptionConversation));
+bot.use(createConversation(updateOptionConversation));
 
 bot.command('start', async (ctx) => {
   await ctx.conversation.enter('startConversation');
@@ -243,6 +411,18 @@ bot.command('add_question', async (ctx) => {
 
 bot.command('update_question', async (ctx) => {
   await ctx.conversation.enter('updateQuestionConversation');
+});
+
+bot.command('delete_question', async (ctx) => {
+  await ctx.conversation.enter('deleteQuestionConversation');
+});
+
+bot.command('add_option', async (ctx) => {
+  await ctx.conversation.enter('addOptionConversation');
+});
+
+bot.command('update_option', async (ctx) => {
+  await ctx.conversation.enter('updateOptionConversation');
 });
 
 bot.catch((err) => {

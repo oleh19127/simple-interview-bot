@@ -64,6 +64,7 @@ class OptionService {
   async updateOption(
     optionText: string,
     newOptionText: string,
+    isCorrect: boolean,
   ): Promise<string> {
     const option = await this.optionServiceRepository.findOneBy({ optionText });
     if (option === null) {
@@ -72,6 +73,7 @@ class OptionService {
       return doesNotExist;
     }
     option.optionText = newOptionText;
+    option.isCorrect = isCorrect;
     await this.optionServiceRepository.save(option);
     const resultMessage = `Option: from "${optionText}" to "${newOptionText}" successfully updated`;
     logger.info(resultMessage);

@@ -77,6 +77,19 @@ class QuestionService {
     logger.info(resultMessage);
     return resultMessage;
   }
+
+  async getOneQuestion(questionText: string): Promise<string | Question> {
+    const question = await this.questionServiceRepository.findOneBy({
+      questionText,
+    });
+
+    if (question === null) {
+      const doesNotExist = `Question: "${questionText}" does not exist`;
+      logger.info(doesNotExist);
+      return doesNotExist;
+    }
+    return question;
+  }
 }
 
 export const questionService = new QuestionService();
