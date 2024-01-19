@@ -1,7 +1,7 @@
 {
   "name": "simple-interview-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Telegram bot for conducting interviews. Manage themes, questions, and options easily. Get random questions, update, delete, and explore various commands.",
   "main": "index.ts",
   "scripts": {
     "build:ts": "tsc",
@@ -11,8 +11,16 @@
     "lint": "npx prettier . --check && npx eslint .",
     "prepare": "husky install"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "telegram",
+    "bot",
+    "interview",
+    "preparation",
+    "questions",
+    "themes",
+    "random question"
+  ],
+  "author": "Oleh Husak (https://github.com/oleh19127)",
   "license": "ISC",
   "engines": {
     "node": "18.x"
