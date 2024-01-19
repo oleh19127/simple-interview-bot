@@ -17,7 +17,8 @@ class OptionService {
       relations: ['options'],
     });
     if (question === null) {
-      const doesNotExistMessage = `Question does not exist`;
+      const doesNotExistMessage =
+        'No question to display\nTo create question: /add_question';
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }

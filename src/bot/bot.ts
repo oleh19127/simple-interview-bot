@@ -437,6 +437,9 @@ async function getAnswerConversation(
   const randomQuestion = await conversation.external(() => {
     return getRandom.question(theme);
   });
+  if (typeof randomQuestion === 'string') {
+    return await ctx.reply(randomQuestion);
+  }
   const allQuestionOptions = await conversation.external(() => {
     return optionService.getQuestionOptions(randomQuestion.questionText);
   });
@@ -448,7 +451,7 @@ async function getAnswerConversation(
     return await ctx.reply(allOptionKeyboard);
   }
   await ctx.reply(randomQuestion.questionText, {
-    reply_markup: allOptionKeyboard.toFlowed(3).oneTime(true),
+    reply_markup: allOptionKeyboard.toFlowed(1).oneTime(true),
   });
   const answer = (await conversation.waitFor('message:text')).message.text;
   const rightAnswer = allQuestionOptions.find((option) => {

@@ -6,8 +6,10 @@ export const generateQuestionKeyboard = async (
   array: Question[],
 ): Promise<string | Keyboard> => {
   if (array.length === 0) {
-    logger.info('No Question to display\nTo create theme: /add_question');
-    return 'No Question to display\nTo create theme: /add_question';
+    const noQuestionsMessage =
+      'No question to display\nTo create question: /add_question';
+    logger.info(noQuestionsMessage);
+    return noQuestionsMessage;
   }
   const questionKeyboard = new Keyboard().resized();
   for (const question of array) {
