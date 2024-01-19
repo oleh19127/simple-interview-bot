@@ -102,7 +102,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Docusaurus cache and generated files
 .docusaurus
@@ -132,8 +131,8 @@ dist
 # package-lock.json
 package-lock.json
 
-# dist
-dist
-
 # sqlite3 db
 simple-interview-bot.sqlite
+
+# WebStorm
+.idea
