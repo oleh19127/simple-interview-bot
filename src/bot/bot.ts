@@ -13,6 +13,7 @@ import { questionService } from '../services/QuestionService';
 import { optionService } from '../services/OptionService';
 import { generateQuestionKeyboard } from './keyboards/generateQuestionKeyboard';
 import { generateOptionKeyboard } from './keyboards/generateOptionKeyboard';
+import { getRandom } from '../utils/getRandom/getRandom';
 
 type MyContext = Context & ConversationFlavor;
 type MyConversation = Conversation<MyContext>;
@@ -21,8 +22,8 @@ export const bot = new Bot<MyContext>(process.env.BOT_TOKEN as string);
 
 bot.api.setMyCommands([
   {
-    command: 'start',
-    description: 'Start the bot and show themes to repeat',
+    command: 'get_answer',
+    description: 'Get an answer on the topic',
   },
   {
     command: 'add_theme',
@@ -59,6 +60,10 @@ bot.api.setMyCommands([
   {
     command: 'delete_option',
     description: 'Delete option',
+  },
+  {
+    command: 'start',
+    description: 'Start the bot',
   },
 ]);
 
@@ -173,22 +178,6 @@ async function addQuestionConversation(
     );
     await ctx.reply(responseResultMessage);
   }
-}
-
-async function startConversation(conversation: MyConversation, ctx: MyContext) {
-  const allThemes = await conversation.external(() => {
-    return themeService.getAllThemes();
-  });
-  const result = await generateThemeKeyboard(allThemes);
-  if (typeof result === 'string') {
-    return await ctx.reply(`Hello ${ctx.from?.first_name}\n${result}`);
-  }
-  return await ctx.reply(
-    `Hello ${ctx.from?.first_name},\nWhat theme do you want to repeat?`,
-    {
-      reply_markup: result.toFlowed(3).oneTime(true),
-    },
-  );
 }
 
 async function updateQuestionConversation(
@@ -430,55 +419,101 @@ async function deleteOptionConversation(
   return await ctx.reply(deleteOptionResult);
 }
 
+async function getAnswerConversation(
+  conversation: MyConversation,
+  ctx: MyContext,
+) {
+  const allThemes = await conversation.external(() => {
+    return themeService.getAllThemes();
+  });
+  const result = await generateThemeKeyboard(allThemes);
+  if (typeof result === 'string') {
+    return await ctx.reply(result);
+  }
+  await ctx.reply('What theme do you want to repeat?', {
+    reply_markup: result.toFlowed(3).oneTime(true),
+  });
+  const theme = (await conversation.waitFor('message:text')).message.text;
+  const randomQuestion = await conversation.external(() => {
+    return getRandom.question(theme);
+  });
+  const allQuestionOptions = await conversation.external(() => {
+    return optionService.getQuestionOptions(randomQuestion.questionText);
+  });
+  if (typeof allQuestionOptions === 'string') {
+    return await ctx.reply(allQuestionOptions);
+  }
+  const allOptionKeyboard = await generateOptionKeyboard(allQuestionOptions);
+  if (typeof allOptionKeyboard === 'string') {
+    return await ctx.reply(allOptionKeyboard);
+  }
+  await ctx.reply(randomQuestion.questionText, {
+    reply_markup: allOptionKeyboard.toFlowed(3).oneTime(true),
+  });
+  const answer = (await conversation.waitFor('message:text')).message.text;
+  const rightAnswer = allQuestionOptions.find((option) => {
+    return option.isCorrect === true;
+  });
+  if (answer === rightAnswer?.optionText) {
+    return await ctx.reply('Right answer 👍');
+  }
+  await ctx.reply('Wrong answer 👎');
+  return await ctx.reply(`Right answer: ${rightAnswer?.optionText}`);
+}
+
 bot.use(createConversation(addThemeConversation));
 bot.use(createConversation(deleteThemeConversion));
 bot.use(createConversation(updateThemeConversion));
 bot.use(createConversation(addQuestionConversation));
-bot.use(createConversation(startConversation));
 bot.use(createConversation(updateQuestionConversation));
 bot.use(createConversation(deleteQuestionConversation));
 bot.use(createConversation(addOptionConversation));
 bot.use(createConversation(updateOptionConversation));
 bot.use(createConversation(deleteOptionConversation));
+bot.use(createConversation(getAnswerConversation));
 
 bot.command('start', async (ctx) => {
-  await ctx.conversation.enter('startConversation');
+  return await ctx.reply(`Hello ${ctx.message?.from.first_name}`);
+});
+
+bot.command('get_answer', async (ctx) => {
+  return await ctx.conversation.enter('getAnswerConversation');
 });
 
 bot.command('add_theme', async (ctx) => {
-  await ctx.conversation.enter('addThemeConversation');
+  return await ctx.conversation.enter('addThemeConversation');
 });
 
 bot.command('delete_theme', async (ctx) => {
-  await ctx.conversation.enter('deleteThemeConversion');
+  return await ctx.conversation.enter('deleteThemeConversion');
 });
 
 bot.command('update_theme', async (ctx) => {
-  await ctx.conversation.enter('updateThemeConversion');
+  return await ctx.conversation.enter('updateThemeConversion');
 });
 
 bot.command('add_question', async (ctx) => {
-  await ctx.conversation.enter('addQuestionConversation');
+  return await ctx.conversation.enter('addQuestionConversation');
 });
 
 bot.command('update_question', async (ctx) => {
-  await ctx.conversation.enter('updateQuestionConversation');
+  return await ctx.conversation.enter('updateQuestionConversation');
 });
 
 bot.command('delete_question', async (ctx) => {
-  await ctx.conversation.enter('deleteQuestionConversation');
+  return await ctx.conversation.enter('deleteQuestionConversation');
 });
 
 bot.command('add_option', async (ctx) => {
-  await ctx.conversation.enter('addOptionConversation');
+  return await ctx.conversation.enter('addOptionConversation');
 });
 
 bot.command('update_option', async (ctx) => {
-  await ctx.conversation.enter('updateOptionConversation');
+  return await ctx.conversation.enter('updateOptionConversation');
 });
 
 bot.command('delete_option', async (ctx) => {
-  await ctx.conversation.enter('deleteOptionConversation');
+  return await ctx.conversation.enter('deleteOptionConversation');
 });
 
 bot.catch((err) => {
