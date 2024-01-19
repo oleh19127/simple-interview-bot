@@ -24,10 +24,9 @@ class ThemeService {
   }
 
   async getAllThemes(): Promise<Theme[]> {
-    const allThemes = await this.themeServiceRepository.find({
+    return await this.themeServiceRepository.find({
       relations: ['questions'],
     });
-    return allThemes;
   }
 
   async deleteTheme(themeName: string): Promise<string> {

@@ -14,8 +14,7 @@ class GetRandom {
       return doesNotExist;
     }
     const randomIndexOfArray = this.random.integer(0, allQuestions.length - 1);
-    const randomQuestion = allQuestions[randomIndexOfArray];
-    return randomQuestion;
+    return allQuestions[randomIndexOfArray];
   }
 }
 
