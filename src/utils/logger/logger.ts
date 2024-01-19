@@ -1,5 +1,4 @@
 import { pino } from 'pino';
-import 'dotenv/config';
 
 const loggerOptions = {
   transport: {

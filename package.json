@@ -1,38 +1,52 @@
 {
   "name": "simple-interview-bot",
   "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "index.js",
+  "description": "A Telegram bot for conducting interviews. Manage themes, questions, and options easily. Get random questions, update, delete, and explore various commands.",
+  "main": "index.ts",
   "scripts": {
-    "dev": "nodemon app/index.js",
-    "start": "node app/index.js",
+    "build:ts": "tsc",
+    "dev": "nodemon src/index.ts",
+    "start": "npm run build:ts && node dist/index.js",
     "format": "npx prettier . --write && npx eslint . --fix",
-    "lint": "npx prettier . --check && npx eslint . --check",
+    "lint": "npx prettier . --check && npx eslint .",
     "prepare": "husky install"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "telegram",
+    "bot",
+    "interview",
+    "preparation",
+    "questions",
+    "themes",
+    "random question"
+  ],
+  "author": "Oleh Husak (https://github.com/oleh19127)",
   "license": "ISC",
-  "lint-staged": {
-    "app/*.js": [
-      "npx prettier --write --ignore-unknown",
-      "npx eslint --fix"
-    ]
+  "engines": {
+    "node": "18.x"
   },
   "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.2.0",
-    "nodemon": "^3.0.2",
-    "prettier": "3.2.1"
+    "husky": "^8.0.3",
+    "nodemon": "^3.0.3",
+    "prettier": "3.2.4",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.2.2"
   },
   "dependencies": {
+    "@grammyjs/conversations": "^1.2.0",
     "dotenv": "^16.3.1",
     "grammy": "^1.20.3",
     "pino": "^8.17.2",
-    "pino-pretty": "^10.3.1"
+    "pino-pretty": "^10.3.1",
+    "random-js": "^2.1.0",
+    "reflect-metadata": "^0.2.1",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.19"
   }
 }
