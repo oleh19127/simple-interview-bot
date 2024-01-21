@@ -22,6 +22,9 @@ export async function updateQuestionConversation(
   const allThemeQuestions = await conversation.external(() => {
     return questionService.getAllThemeQuestions(theme);
   });
+  if (typeof allThemeQuestions === 'string') {
+    return await ctx.reply(allThemeQuestions);
+  }
   const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
   if (typeof allQuestionKeyboard === 'string') {
     return await ctx.reply(allQuestionKeyboard);
@@ -34,7 +37,11 @@ export async function updateQuestionConversation(
   await ctx.reply('Write new question');
   const newQuestionToUpdate = (await conversation.waitFor('message:text'))
     .message.text;
-
+  if (questionToUpdate === newQuestionToUpdate) {
+    return await ctx.reply(
+      'The existing question is the same as you renamed it!',
+    );
+  }
   const questionUpdateResult = await conversation.external(() => {
     return questionService.updateQuestion(
       questionToUpdate,

@@ -15,9 +15,10 @@ class ThemeService {
       logger.info(alreadyExistMessage);
       return alreadyExistMessage;
     }
-    const newThemeName = new Theme();
-    newThemeName.themeName = themeName;
-    await this.themeServiceRepository.save(newThemeName);
+    const theme = this.themeServiceRepository.create({
+      themeName,
+    });
+    await this.themeServiceRepository.insert(theme);
     const resultMessage = `Theme: "${themeName}" successfully saved`;
     logger.info(resultMessage);
     return resultMessage;
@@ -45,7 +46,6 @@ class ThemeService {
   }
 
   async updateTheme(themeName: string, newThemeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
     const theme = await this.themeServiceRepository.findOneBy({
       themeName,
     });
@@ -55,8 +55,14 @@ class ThemeService {
       return doesNotExist;
     }
     newThemeName = newThemeName.toUpperCase();
-    theme.themeName = newThemeName;
-    await this.themeServiceRepository.save(theme);
+    await this.themeServiceRepository.update(
+      {
+        themeName,
+      },
+      {
+        themeName: newThemeName,
+      },
+    );
     const resultMessage = `Theme: from "${themeName}" to "${newThemeName}" successfully updated`;
     logger.info(resultMessage);
     return resultMessage;

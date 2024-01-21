@@ -23,13 +23,13 @@ class OptionService {
       return doesNotExistMessage;
     }
     optionText = optionText.trim();
-    const option = new Option();
-    option.isCorrect = isCorrect;
-    option.optionText = optionText;
-    option.questionQuestionId = question.questionId;
-    await this.optionServiceRepository.save(option);
+    const option = this.optionServiceRepository.create({
+      isCorrect,
+      optionText,
+      questionQuestionId: questionId,
+    });
+    await this.optionServiceRepository.insert(option);
     question.options.push(option);
-    await this.questionServiceRepository.save(question);
     const resultMessage = `Option: "${optionText}" successfully saved to "${question.questionText}" question`;
     logger.info(resultMessage);
     return resultMessage;
@@ -73,9 +73,15 @@ class OptionService {
       logger.info(doesNotExist);
       return doesNotExist;
     }
-    option.optionText = newOptionText;
-    option.isCorrect = isCorrect;
-    await this.optionServiceRepository.save(option);
+    await this.optionServiceRepository.update(
+      {
+        optionText,
+      },
+      {
+        optionText: newOptionText,
+        isCorrect,
+      },
+    );
     const resultMessage = `Option: from "${optionText}" to "${newOptionText}" successfully updated`;
     logger.info(resultMessage);
     return resultMessage;

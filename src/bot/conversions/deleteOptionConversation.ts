@@ -24,6 +24,9 @@ export async function deleteOptionConversation(
   const allThemeQuestions = await conversation.external(() => {
     return questionService.getAllThemeQuestions(theme);
   });
+  if (typeof allThemeQuestions === 'string') {
+    return await ctx.reply(allThemeQuestions);
+  }
   const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
   if (typeof allQuestionKeyboard === 'string') {
     return await ctx.reply(allQuestionKeyboard);

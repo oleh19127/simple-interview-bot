@@ -20,6 +20,9 @@ export async function updateThemeConversion(
   await ctx.reply('Write new theme name');
   const newThemeName = (await conversation.waitFor('message:text')).message
     .text;
+  if (existTheme === newThemeName.toUpperCase()) {
+    return await ctx.reply('The existing topic is the same as you renamed!');
+  }
   const updateResult = await conversation.external(() => {
     return themeService.updateTheme(existTheme, newThemeName);
   });

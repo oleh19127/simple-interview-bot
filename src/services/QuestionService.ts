@@ -26,21 +26,26 @@ class QuestionService {
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }
-    const question = new Question();
-    question.questionText = text;
-    question.themeThemeId = theme.themeId;
-    await this.questionServiceRepository.save(question);
+    const question = this.questionServiceRepository.create({
+      questionText: text,
+      themeThemeId: theme.themeId,
+    });
+    await this.questionServiceRepository.insert(question);
     theme.questions.push(question);
-    await this.themeServiceRepository.save(theme);
     const resultMessage = `Question: "${text}" successfully saved to "${themeName}" theme`;
     logger.info(resultMessage);
     return { resultMessage, questionId: question.questionId };
   }
 
-  async getAllThemeQuestions(themeName: string): Promise<Question[]> {
+  async getAllThemeQuestions(themeName: string): Promise<Question[] | string> {
     const theme = await this.themeServiceRepository.findOneBy({ themeName });
+    if (theme === null) {
+      const doesNotExistMessage = `Theme: "${themeName}" does not exist`;
+      logger.info(doesNotExistMessage);
+      return doesNotExistMessage;
+    }
     return await this.questionServiceRepository.find({
-      where: { themeThemeId: theme?.themeId },
+      where: { themeThemeId: theme.themeId },
       relations: ['options'],
     });
   }
@@ -71,8 +76,14 @@ class QuestionService {
       logger.info(doesNotExist);
       return doesNotExist;
     }
-    question.questionText = newQuestionText;
-    await this.questionServiceRepository.save(question);
+    await this.questionServiceRepository.update(
+      {
+        questionText,
+      },
+      {
+        questionText: newQuestionText,
+      },
+    );
     const resultMessage = `Question: from "${questionText}" to "${newQuestionText}" successfully updated`;
     logger.info(resultMessage);
     return resultMessage;
@@ -82,7 +93,6 @@ class QuestionService {
     const question = await this.questionServiceRepository.findOneBy({
       questionText,
     });
-
     if (question === null) {
       const doesNotExist = `Question: "${questionText}" does not exist`;
       logger.info(doesNotExist);
