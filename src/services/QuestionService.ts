@@ -11,9 +11,9 @@ class QuestionService {
     themeName: string,
     text: string,
   ): Promise<string | { resultMessage: string; questionId: number }> {
-    text = text.trim();
-    if (text.length === 0 || text.length < 3) {
-      const tooShortMessage = `This text: "${text}" too short, must be, must be more than two characters`;
+    const trimmedText = text.trim();
+    if (trimmedText.length === 0 || trimmedText.length < 3) {
+      const tooShortMessage = `This text: "${trimmedText}" too short, must be, must be more than two characters`;
       logger.info(tooShortMessage);
       return tooShortMessage;
     }
@@ -27,12 +27,12 @@ class QuestionService {
       return doesNotExistMessage;
     }
     const question = this.questionServiceRepository.create({
-      questionText: text,
+      questionText: trimmedText,
       themeThemeId: theme.themeId,
     });
     await this.questionServiceRepository.insert(question);
     theme.questions.push(question);
-    const resultMessage = `Question: "${text}" successfully saved to "${themeName}" theme`;
+    const resultMessage = `Question: "${trimmedText}" successfully saved to "${themeName}" theme`;
     logger.info(resultMessage);
     return { resultMessage, questionId: question.questionId };
   }

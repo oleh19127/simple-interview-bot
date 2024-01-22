@@ -22,15 +22,15 @@ class OptionService {
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }
-    optionText = optionText.trim();
+    const localOptionText = optionText.trim();
     const option = this.optionServiceRepository.create({
       isCorrect,
-      optionText,
+      optionText: localOptionText,
       questionQuestionId: questionId,
     });
     await this.optionServiceRepository.insert(option);
     question.options.push(option);
-    const resultMessage = `Option: "${optionText}" successfully saved to "${question.questionText}" question`;
+    const resultMessage = `Option: "${localOptionText}" successfully saved to "${question.questionText}" question`;
     logger.info(resultMessage);
     return resultMessage;
   }

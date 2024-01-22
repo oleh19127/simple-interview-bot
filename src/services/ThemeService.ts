@@ -6,20 +6,20 @@ class ThemeService {
   private themeServiceRepository = AppDataSource.getRepository(Theme);
 
   async createTheme(themeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
+    const localThemeName = themeName.toUpperCase();
     const candidateName = await this.themeServiceRepository.existsBy({
-      themeName,
+      themeName: localThemeName,
     });
     if (candidateName) {
-      const alreadyExistMessage = `Theme: "${themeName}" already exist`;
+      const alreadyExistMessage = `Theme: "${localThemeName}" already exist`;
       logger.info(alreadyExistMessage);
       return alreadyExistMessage;
     }
     const theme = this.themeServiceRepository.create({
-      themeName,
+      themeName: localThemeName,
     });
     await this.themeServiceRepository.insert(theme);
-    const resultMessage = `Theme: "${themeName}" successfully saved`;
+    const resultMessage = `Theme: "${localThemeName}" successfully saved`;
     logger.info(resultMessage);
     return resultMessage;
   }
@@ -31,16 +31,16 @@ class ThemeService {
   }
 
   async deleteTheme(themeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
+    const localThemeName = themeName.toUpperCase();
     const destroyedTheme = await this.themeServiceRepository.delete({
-      themeName,
+      themeName: localThemeName,
     });
     if (destroyedTheme.affected === 0) {
-      const doesNotExistMessage = `Theme: "${themeName}" does not exist`;
+      const doesNotExistMessage = `Theme: "${localThemeName}" does not exist`;
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }
-    const okDeleted = `Theme: "${themeName}" successfully deleted`;
+    const okDeleted = `Theme: "${localThemeName}" successfully deleted`;
     logger.info(okDeleted);
     return okDeleted;
   }
@@ -54,16 +54,16 @@ class ThemeService {
       logger.info(doesNotExist);
       return doesNotExist;
     }
-    newThemeName = newThemeName.toUpperCase();
+    const localNewThemeName = newThemeName.toUpperCase();
     await this.themeServiceRepository.update(
       {
         themeName,
       },
       {
-        themeName: newThemeName,
+        themeName: localNewThemeName,
       },
     );
-    const resultMessage = `Theme: from "${themeName}" to "${newThemeName}" successfully updated`;
+    const resultMessage = `Theme: from "${themeName}" to "${localNewThemeName}" successfully updated`;
     logger.info(resultMessage);
     return resultMessage;
   }

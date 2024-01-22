@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Theme } from './entity/Theme';
-import { Question } from './entity/Question';
 import { Option } from './entity/Option';
+import { Question } from './entity/Question';
+import { Theme } from './entity/Theme';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
