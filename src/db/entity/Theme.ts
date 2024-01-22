@@ -18,7 +18,7 @@ export class Theme {
   themeName: string;
 
   @Column()
-  userId: number;
+  userUserId: number;
 
   @OneToMany(
     () => Question,
@@ -29,6 +29,9 @@ export class Theme {
   @ManyToOne(
     () => User,
     (user) => user.themes,
+    {
+      onDelete: 'CASCADE',
+    },
   )
   user: User;
 }
