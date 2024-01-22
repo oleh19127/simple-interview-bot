@@ -1,6 +1,6 @@
 import { Random } from 'random-js';
-import { questionService } from '../../services/QuestionService';
 import { Question } from '../../db/entity/Question';
+import { questionService } from '../../services/QuestionService';
 import { logger } from '../logger/logger';
 
 class GetRandom {

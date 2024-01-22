@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.ts",
     "start": "npm run build:ts && node dist/index.js",
     "format": "prettier --write \"**/*.{json,md}\"",
-    "biome": "npx @biomejs/biome check --apply src/**/*.ts",
+    "biome": "npx @biomejs/biome check --apply src",
     "prepare": "husky install"
   },
   "keywords": [

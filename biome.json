@@ -14,7 +14,8 @@
       "bracketSameLine": false,
       "quoteProperties": "asNeeded",
       "trailingComma": "all",
-      "semicolons": "always"
+      "semicolons": "always",
+      "arrowParentheses": "always"
     }
   },
   "linter": {

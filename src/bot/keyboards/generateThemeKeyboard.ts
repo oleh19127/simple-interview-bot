@@ -1,6 +1,6 @@
 import { Keyboard } from 'grammy';
-import { logger } from '../../utils/logger/logger';
 import { Theme } from '../../db/entity/Theme';
+import { logger } from '../../utils/logger/logger';
 
 export const generateThemeKeyboard = async (
   array: Theme[],

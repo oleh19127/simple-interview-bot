@@ -1,8 +1,8 @@
-import { themeService } from '../../services/ThemeService';
-import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
-import { questionService } from '../../services/QuestionService';
 import { optionService } from '../../services/OptionService';
+import { questionService } from '../../services/QuestionService';
+import { themeService } from '../../services/ThemeService';
 import { MyContext, MyConversation } from '../bot';
+import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function addQuestionConversation(
   conversation: MyConversation,

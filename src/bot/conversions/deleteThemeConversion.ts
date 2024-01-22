@@ -1,6 +1,6 @@
 import { themeService } from '../../services/ThemeService';
-import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 import { MyContext, MyConversation } from '../bot';
+import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function deleteThemeConversion(
   conversation: MyConversation,

@@ -1,9 +1,9 @@
-import { themeService } from '../../services/ThemeService';
-import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
-import { questionService } from '../../services/QuestionService';
-import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
 import { optionService } from '../../services/OptionService';
+import { questionService } from '../../services/QuestionService';
+import { themeService } from '../../services/ThemeService';
 import { MyContext, MyConversation } from '../bot';
+import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
+import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function addOptionConversation(
   conversation: MyConversation,

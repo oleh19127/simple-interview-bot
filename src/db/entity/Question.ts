@@ -6,8 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Theme } from './Theme';
 import { Option } from './Option';
+import { Theme } from './Theme';
 
 @Entity()
 export class Question {
@@ -20,12 +20,19 @@ export class Question {
   @Column()
   themeThemeId: number;
 
-  @ManyToOne(() => Theme, (theme) => theme.questions, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(
+    () => Theme,
+    (theme) => theme.questions,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
   theme: Theme;
 
-  @OneToMany(() => Option, (option) => option.question)
+  @OneToMany(
+    () => Option,
+    (option) => option.question,
+  )
   @JoinTable()
   options: Option[];
 }

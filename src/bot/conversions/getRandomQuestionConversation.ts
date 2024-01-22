@@ -1,9 +1,9 @@
-import { themeService } from '../../services/ThemeService';
-import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
-import { getRandom } from '../../utils/getRandom/getRandom';
 import { optionService } from '../../services/OptionService';
-import { generateOptionKeyboard } from '../keyboards/generateOptionKeyboard';
+import { themeService } from '../../services/ThemeService';
+import { getRandom } from '../../utils/getRandom/getRandom';
 import { MyContext, MyConversation } from '../bot';
+import { generateOptionKeyboard } from '../keyboards/generateOptionKeyboard';
+import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function getRandomQuestionConversation(
   conversation: MyConversation,
