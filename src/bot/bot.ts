@@ -15,7 +15,9 @@ import { addThemeConversation } from './conversions/addThemeConversion';
 import { deleteOptionConversation } from './conversions/deleteOptionConversation';
 import { deleteQuestionConversation } from './conversions/deleteQuestionConversation';
 import { deleteThemeConversion } from './conversions/deleteThemeConversion';
+import { getAllUsersConversation } from './conversions/getAllUsersConversation';
 import { getRandomQuestionConversation } from './conversions/getRandomQuestionConversation';
+import { startConversation } from './conversions/startConversation';
 import { updateOptionConversation } from './conversions/updateOptionConversation';
 import { updateQuestionConversation } from './conversions/updateQuestionConversation';
 import { updateThemeConversion } from './conversions/updateThemeConversion';
@@ -38,13 +40,15 @@ bot.use(createConversation(addOptionConversation));
 bot.use(createConversation(updateOptionConversation));
 bot.use(createConversation(deleteOptionConversation));
 bot.use(createConversation(getRandomQuestionConversation));
+bot.use(createConversation(startConversation));
+bot.use(createConversation(getAllUsersConversation));
 
 bot.command('start', async (ctx) => {
-  await ctx.api.setMyCommands(commands);
-  await ctx.reply(
-    `Hello ${ctx.message?.from.first_name}, where do you want to start?`,
-  );
-  return await ctx.reply(await commandsUtil.getHelpText(commands));
+  return await ctx.conversation.enter('startConversation');
+});
+
+bot.command('get_users', async (ctx) => {
+  return await ctx.conversation.enter('getAllUsersConversation');
 });
 
 bot.command('get_random_question', async (ctx) => {
