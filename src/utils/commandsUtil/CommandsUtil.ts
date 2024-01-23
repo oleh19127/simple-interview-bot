@@ -5,7 +5,7 @@ class CommandsUtil {
     commands: { command: string; description: string }[],
   ): Promise<string> {
     if (commands.length === 0) {
-      const noCommandsToDisplayMessage = 'No commandsUtil to display';
+      const noCommandsToDisplayMessage = 'No commands to display';
       logger.info(noCommandsToDisplayMessage);
       return noCommandsToDisplayMessage;
     }

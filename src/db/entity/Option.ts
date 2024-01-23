@@ -15,8 +15,12 @@ export class Option {
   @Column()
   questionQuestionId: number;
 
-  @ManyToOne(() => Question, (question) => question.options, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(
+    () => Question,
+    (question) => question.options,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
   question: Question;
 }

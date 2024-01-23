@@ -1,15 +1,22 @@
-import { themeService } from '../../services/ThemeService';
-import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 import { questionService } from '../../services/QuestionService';
-import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
+import { themeService } from '../../services/ThemeService';
+import { userService } from '../../services/UserService';
 import { MyContext, MyConversation } from '../bot';
+import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
+import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function deleteQuestionConversation(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
+  const user = await conversation.external(() => {
+    return userService.getOneUser(ctx.from?.username as string);
+  });
+  if (typeof user === 'string') {
+    return await ctx.reply(user);
+  }
   const allThemes = await conversation.external(() => {
-    return themeService.getAllThemes();
+    return themeService.getAllThemes(user.userId);
   });
   const allThemesKeyboard = await generateThemeKeyboard(allThemes);
   if (typeof allThemesKeyboard === 'string') {
@@ -22,6 +29,9 @@ export async function deleteQuestionConversation(
   const allThemeQuestions = await conversation.external(() => {
     return questionService.getAllThemeQuestions(theme);
   });
+  if (typeof allThemeQuestions === 'string') {
+    return await ctx.reply(allThemeQuestions);
+  }
   const allQuestionKeyboard = await generateQuestionKeyboard(allThemeQuestions);
   if (typeof allQuestionKeyboard === 'string') {
     return await ctx.reply(allQuestionKeyboard);

@@ -1,24 +1,26 @@
-import 'dotenv/config';
-import { Bot, Context, GrammyError, HttpError, session } from 'grammy';
 import {
   type Conversation,
   type ConversationFlavor,
   conversations,
   createConversation,
 } from '@grammyjs/conversations';
+import 'dotenv/config';
+import { Bot, Context, GrammyError, HttpError, session } from 'grammy';
+import { commandsUtil } from '../utils/commandsUtil/CommandsUtil';
 import { logger } from '../utils/logger/logger';
 import { commands } from './commands/commands';
-import { commandsUtil } from '../utils/commandsUtil/CommandsUtil';
-import { addThemeConversation } from './conversions/addThemeConversion';
-import { updateThemeConversion } from './conversions/updateThemeConversion';
-import { deleteThemeConversion } from './conversions/deleteThemeConversion';
-import { addQuestionConversation } from './conversions/addQuestionConversion';
-import { updateQuestionConversation } from './conversions/updateQuestionConversation';
-import { deleteQuestionConversation } from './conversions/deleteQuestionConversation';
-import { updateOptionConversation } from './conversions/updateOptionConversation';
-import { deleteOptionConversation } from './conversions/deleteOptionConversation';
-import { getRandomQuestionConversation } from './conversions/getRandomQuestionConversation';
 import { addOptionConversation } from './conversions/addOptionConversation';
+import { addQuestionConversation } from './conversions/addQuestionConversion';
+import { addThemeConversation } from './conversions/addThemeConversion';
+import { deleteOptionConversation } from './conversions/deleteOptionConversation';
+import { deleteQuestionConversation } from './conversions/deleteQuestionConversation';
+import { deleteThemeConversion } from './conversions/deleteThemeConversion';
+import { getAllUsersConversation } from './conversions/getAllUsersConversation';
+import { getRandomQuestionConversation } from './conversions/getRandomQuestionConversation';
+import { startConversation } from './conversions/startConversation';
+import { updateOptionConversation } from './conversions/updateOptionConversation';
+import { updateQuestionConversation } from './conversions/updateQuestionConversation';
+import { updateThemeConversion } from './conversions/updateThemeConversion';
 
 export type MyContext = Context & ConversationFlavor;
 export type MyConversation = Conversation<MyContext>;
@@ -38,13 +40,15 @@ bot.use(createConversation(addOptionConversation));
 bot.use(createConversation(updateOptionConversation));
 bot.use(createConversation(deleteOptionConversation));
 bot.use(createConversation(getRandomQuestionConversation));
+bot.use(createConversation(startConversation));
+bot.use(createConversation(getAllUsersConversation));
 
 bot.command('start', async (ctx) => {
-  await ctx.api.setMyCommands(commands);
-  await ctx.reply(
-    `Hello ${ctx.message?.from.first_name}, where do you want to start?`,
-  );
-  return await ctx.reply(await commandsUtil.getHelpText(commands));
+  return await ctx.conversation.enter('startConversation');
+});
+
+bot.command('get_users', async (ctx) => {
+  return await ctx.conversation.enter('getAllUsersConversation');
 });
 
 bot.command('get_random_question', async (ctx) => {

@@ -5,47 +5,51 @@ import { logger } from '../utils/logger/logger';
 class ThemeService {
   private themeServiceRepository = AppDataSource.getRepository(Theme);
 
-  async createTheme(themeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
-    const candidateName = await this.themeServiceRepository.existsBy({
-      themeName,
+  async createTheme(themeName: string, userId: number): Promise<string> {
+    const localThemeName = themeName.toUpperCase();
+    const candidateTheme = await this.themeServiceRepository.findOneBy({
+      themeName: localThemeName,
+      userUserId: userId,
     });
-    if (candidateName) {
-      const alreadyExistMessage = `Theme: "${themeName}" already exist`;
-      logger.info(alreadyExistMessage);
-      return alreadyExistMessage;
+    if (candidateTheme != null) {
+      const themeAlreadyExistMessage = `Theme: "${localThemeName}" already exist`;
+      logger.info(themeAlreadyExistMessage);
+      return themeAlreadyExistMessage;
     }
-    const newThemeName = new Theme();
-    newThemeName.themeName = themeName;
-    await this.themeServiceRepository.save(newThemeName);
-    const resultMessage = `Theme: "${themeName}" successfully saved`;
+
+    const theme = this.themeServiceRepository.create({
+      themeName: localThemeName,
+      userUserId: userId,
+    });
+    await this.themeServiceRepository.insert(theme);
+    const resultMessage = `Theme: "${localThemeName}" successfully saved`;
     logger.info(resultMessage);
     return resultMessage;
   }
 
-  async getAllThemes(): Promise<Theme[]> {
+  async getAllThemes(userId: number): Promise<Theme[]> {
     return await this.themeServiceRepository.find({
+      where: { userUserId: userId },
       relations: ['questions'],
     });
   }
 
   async deleteTheme(themeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
+    const localThemeName = themeName.toUpperCase();
     const destroyedTheme = await this.themeServiceRepository.delete({
-      themeName,
+      themeName: localThemeName,
     });
     if (destroyedTheme.affected === 0) {
-      const doesNotExistMessage = `Theme: "${themeName}" does not exist`;
+      const doesNotExistMessage = `Theme: "${localThemeName}" does not exist`;
       logger.info(doesNotExistMessage);
       return doesNotExistMessage;
     }
-    const okDeleted = `Theme: "${themeName}" successfully deleted`;
+    const okDeleted = `Theme: "${localThemeName}" successfully deleted`;
     logger.info(okDeleted);
     return okDeleted;
   }
 
   async updateTheme(themeName: string, newThemeName: string): Promise<string> {
-    themeName = themeName.toUpperCase();
     const theme = await this.themeServiceRepository.findOneBy({
       themeName,
     });
@@ -54,10 +58,16 @@ class ThemeService {
       logger.info(doesNotExist);
       return doesNotExist;
     }
-    newThemeName = newThemeName.toUpperCase();
-    theme.themeName = newThemeName;
-    await this.themeServiceRepository.save(theme);
-    const resultMessage = `Theme: from "${themeName}" to "${newThemeName}" successfully updated`;
+    const localNewThemeName = newThemeName.toUpperCase();
+    await this.themeServiceRepository.update(
+      {
+        themeName,
+      },
+      {
+        themeName: localNewThemeName,
+      },
+    );
+    const resultMessage = `Theme: from "${themeName}" to "${localNewThemeName}" successfully updated`;
     logger.info(resultMessage);
     return resultMessage;
   }
