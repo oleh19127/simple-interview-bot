@@ -10,6 +10,10 @@ Simple Interview Bot is a Telegram bot designed to facilitate interviews by mana
 - Retrieve random questions on a specific theme.
 - Explore a list of available commands.
 
+## Requirements
+
+- Username in telegram
+
 ## How To Use
 
 1.  <pre>git clone https://github.com/oleh19127/simple-interview-bot.git .; rm -rf trunk .gitignore readme.md .git .gitattributes</pre>
