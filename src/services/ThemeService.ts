@@ -29,7 +29,7 @@ class ThemeService {
 
   async getAllThemes(userId: number): Promise<Theme[]> {
     return await this.themeServiceRepository.find({
-      where: {userUserId: userId},
+      where: { userUserId: userId },
       relations: ['questions'],
     });
   }
