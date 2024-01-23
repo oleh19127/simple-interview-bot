@@ -40,13 +40,16 @@ export async function addQuestionConversation(
   for (let index = 1; index <= optionsFromUser; index++) {
     await ctx.reply(`${index}) option:`);
     const option = (await conversation.waitFor('message:text')).message.text;
-    await ctx.reply('This option is correct?\nYes/No');
+    await ctx.reply('This option is correct?\nYes(y)/No(n)');
     let isCorrect: string | boolean = (
       await conversation.waitFor('message:text')
     ).message.text;
-    if (isCorrect.toLowerCase() === 'yes') {
+    if (isCorrect.toLowerCase() === 'yes' || isCorrect.toLowerCase() === 'y') {
       isCorrect = true;
-    } else if (isCorrect.toLowerCase() === 'no') {
+    } else if (
+      isCorrect.toLowerCase() === 'no' ||
+      isCorrect.toLowerCase() === 'n'
+    ) {
       isCorrect = false;
     } else {
       return await ctx.reply('Your answer is not correct');
