@@ -32,7 +32,7 @@ class UserService {
       userName,
     });
     if (user === null) {
-      const doesNotExist = `User: "${userName}" does not exist`;
+      const doesNotExist = `User: "${userName}" does not exist\nRestart bot: /start`;
       logger.info(doesNotExist);
       return doesNotExist;
     }
