@@ -51,12 +51,12 @@ export async function addOptionConversation(
   await ctx.reply('Write a new answer option');
   const newAnswerOption = (await conversation.waitFor('message:text')).message
     .text;
-  await ctx.reply('This option is correct?\nYes/No');
+  await ctx.reply('This option is correct?\ny/n');
   let isCorrect: string | boolean = (await conversation.waitFor('message:text'))
     .message.text;
-  if (isCorrect.toLowerCase() === 'yes') {
+  if (isCorrect.toLowerCase() === 'y') {
     isCorrect = true;
-  } else if (isCorrect.toLowerCase() === 'no') {
+  } else if (isCorrect.toLowerCase() === 'n') {
     isCorrect = false;
   } else {
     return await ctx.reply('Your answer is not correct');
