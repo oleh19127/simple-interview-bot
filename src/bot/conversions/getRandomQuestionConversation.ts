@@ -1,5 +1,6 @@
 import { optionService } from '../../services/OptionService';
 import { themeService } from '../../services/ThemeService';
+import { userService } from '../../services/UserService';
 import { getRandom } from '../../utils/getRandom/getRandom';
 import { MyContext, MyConversation } from '../bot';
 import { generateOptionKeyboard } from '../keyboards/generateOptionKeyboard';
@@ -9,8 +10,14 @@ export async function getRandomQuestionConversation(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
+  const user = await conversation.external(() => {
+    return userService.getOneUser(ctx.from?.username as string);
+  });
+  if (typeof user === 'string') {
+    return await ctx.reply(user);
+  }
   const allThemes = await conversation.external(() => {
-    return themeService.getAllThemes();
+    return themeService.getAllThemes(user.userId);
   });
   const result = await generateThemeKeyboard(allThemes);
   if (typeof result === 'string') {

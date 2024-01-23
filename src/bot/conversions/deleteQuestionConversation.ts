@@ -1,5 +1,6 @@
 import { questionService } from '../../services/QuestionService';
 import { themeService } from '../../services/ThemeService';
+import { userService } from '../../services/UserService';
 import { MyContext, MyConversation } from '../bot';
 import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
 import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
@@ -8,8 +9,14 @@ export async function deleteQuestionConversation(
   conversation: MyConversation,
   ctx: MyContext,
 ) {
+  const user = await conversation.external(() => {
+    return userService.getOneUser(ctx.from?.username as string);
+  });
+  if (typeof user === 'string') {
+    return await ctx.reply(user);
+  }
   const allThemes = await conversation.external(() => {
-    return themeService.getAllThemes();
+    return themeService.getAllThemes(user.userId);
   });
   const allThemesKeyboard = await generateThemeKeyboard(allThemes);
   if (typeof allThemesKeyboard === 'string') {

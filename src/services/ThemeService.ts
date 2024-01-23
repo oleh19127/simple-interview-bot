@@ -5,18 +5,21 @@ import { logger } from '../utils/logger/logger';
 class ThemeService {
   private themeServiceRepository = AppDataSource.getRepository(Theme);
 
-  async createTheme(themeName: string): Promise<string> {
+  async createTheme(themeName: string, userId: number): Promise<string> {
     const localThemeName = themeName.toUpperCase();
-    const candidateName = await this.themeServiceRepository.existsBy({
+    const candidateTheme = await this.themeServiceRepository.findOneBy({
       themeName: localThemeName,
+      userUserId: userId,
     });
-    if (candidateName) {
-      const alreadyExistMessage = `Theme: "${localThemeName}" already exist`;
-      logger.info(alreadyExistMessage);
-      return alreadyExistMessage;
+    if (candidateTheme != null) {
+      const themeAlreadyExistMessage = `Theme: "${localThemeName}" already exist`;
+      logger.info(themeAlreadyExistMessage);
+      return themeAlreadyExistMessage;
     }
+
     const theme = this.themeServiceRepository.create({
       themeName: localThemeName,
+      userUserId: userId,
     });
     await this.themeServiceRepository.insert(theme);
     const resultMessage = `Theme: "${localThemeName}" successfully saved`;
@@ -24,8 +27,9 @@ class ThemeService {
     return resultMessage;
   }
 
-  async getAllThemes(): Promise<Theme[]> {
+  async getAllThemes(userId: number): Promise<Theme[]> {
     return await this.themeServiceRepository.find({
+      where: {userUserId: userId},
       relations: ['questions'],
     });
   }
