@@ -9,10 +9,10 @@ import { Theme } from './Theme';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   userId: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'text' })
   userName: string;
 
   @OneToMany(

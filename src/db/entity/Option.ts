@@ -3,16 +3,16 @@ import { Question } from './Question';
 
 @Entity()
 export class Option {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   optionId: number;
 
-  @Column()
+  @Column({ type: 'text' })
   optionText: string;
 
-  @Column()
+  @Column({ type: 'boolean' })
   isCorrect: boolean;
 
-  @Column()
+  @Column({ type: 'int' })
   questionQuestionId: number;
 
   @ManyToOne(

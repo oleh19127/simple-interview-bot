@@ -1,3 +1,4 @@
+import { Keyboard } from 'grammy';
 import { optionService } from '../../services/OptionService';
 import { questionService } from '../../services/QuestionService';
 import { themeService } from '../../services/ThemeService';
@@ -51,12 +52,20 @@ export async function addOptionConversation(
   await ctx.reply('Write a new answer option');
   const newAnswerOption = (await conversation.waitFor('message:text')).message
     .text;
-  await ctx.reply('This option is correct?\ny/n');
+  const yesOrNoKeyboard = new Keyboard()
+    .text('YES')
+    .text('NO')
+    .oneTime(true)
+    .resized()
+    .toFlowed(2);
+  await ctx.reply('This option is correct?', {
+    reply_markup: yesOrNoKeyboard,
+  });
   let isCorrect: string | boolean = (await conversation.waitFor('message:text'))
     .message.text;
-  if (isCorrect.toLowerCase() === 'y') {
+  if (isCorrect.toLowerCase() === 'yes') {
     isCorrect = true;
-  } else if (isCorrect.toLowerCase() === 'n') {
+  } else if (isCorrect.toLowerCase() === 'no') {
     isCorrect = false;
   } else {
     return await ctx.reply('Your answer is not correct');

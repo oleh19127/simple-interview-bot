@@ -32,9 +32,9 @@ Simple Interview Bot is a Telegram bot designed to facilitate interviews by mana
 1.  Use the listed commands to explore features.
 1.  Follow on-screen instructions for each command.
 
-## Live Public Example
+<!-- ## Live Public Example
 
-### [Simple Interview Bot](https://t.me/SimpleInterviewBot)
+### [Simple Interview Bot](https://t.me/SimpleInterviewBot) -->
 
 ### Available Commands
 

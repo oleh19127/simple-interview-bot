@@ -11,13 +11,13 @@ import { User } from './User';
 
 @Entity()
 export class Theme {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   themeId: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'text' })
   themeName: string;
 
-  @Column()
+  @Column({ type: 'int' })
   userUserId: number;
 
   @OneToMany(
