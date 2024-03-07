@@ -11,13 +11,13 @@ import { Theme } from './Theme';
 
 @Entity()
 export class Question {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   questionId: number;
 
-  @Column()
+  @Column({ type: 'text' })
   questionText: string;
 
-  @Column()
+  @Column({ type: 'int' })
   themeThemeId: number;
 
   @ManyToOne(

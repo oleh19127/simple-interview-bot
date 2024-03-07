@@ -18,7 +18,7 @@
     "lib": ["ESNext"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": false
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts"]
 }
