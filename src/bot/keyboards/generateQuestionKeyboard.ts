@@ -1,5 +1,5 @@
 import { Keyboard } from 'grammy';
-import { Question } from '../../db/entity/Question';
+import type { Question } from '../../db/entity/Question';
 import { logger } from '../../utils/logger/logger';
 
 export const generateQuestionKeyboard = async (

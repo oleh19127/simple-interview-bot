@@ -1,5 +1,5 @@
 import { Keyboard } from 'grammy';
-import { Option } from '../../db/entity/Option';
+import type { Option } from '../../db/entity/Option';
 import { logger } from '../../utils/logger/logger';
 
 export const generateOptionKeyboard = async (

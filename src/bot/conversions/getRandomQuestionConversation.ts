@@ -2,7 +2,7 @@ import { optionService } from '../../services/OptionService';
 import { themeService } from '../../services/ThemeService';
 import { userService } from '../../services/UserService';
 import { getRandom } from '../../utils/getRandom/getRandom';
-import { MyContext, MyConversation } from '../bot';
+import type { MyContext, MyConversation } from '../bot';
 import { generateOptionKeyboard } from '../keyboards/generateOptionKeyboard';
 import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 

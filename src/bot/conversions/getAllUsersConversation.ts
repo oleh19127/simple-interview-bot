@@ -1,5 +1,5 @@
 import { userService } from '../../services/UserService';
-import { MyContext, MyConversation } from '../bot';
+import type { MyContext, MyConversation } from '../bot';
 
 export async function getAllUsersConversation(
   conversation: MyConversation,
