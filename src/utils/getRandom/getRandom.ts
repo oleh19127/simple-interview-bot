@@ -1,5 +1,5 @@
 import { Random } from 'random-js';
-import { Question } from '../../db/entity/Question';
+import type { Question } from '../../db/entity/Question';
 import { questionService } from '../../services/QuestionService';
 import { logger } from '../logger/logger';
 

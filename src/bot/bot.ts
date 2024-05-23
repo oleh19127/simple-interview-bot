@@ -5,7 +5,7 @@ import {
   createConversation,
 } from '@grammyjs/conversations';
 import 'dotenv/config';
-import { Bot, Context, GrammyError, HttpError, session } from 'grammy';
+import { Bot, type Context, GrammyError, HttpError, session } from 'grammy';
 import { commandsUtil } from '../utils/commandsUtil/CommandsUtil';
 import { logger } from '../utils/logger/logger';
 import { commands } from './commands/commands';

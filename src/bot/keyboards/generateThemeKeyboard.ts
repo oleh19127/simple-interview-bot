@@ -1,5 +1,5 @@
 import { Keyboard } from 'grammy';
-import { Theme } from '../../db/entity/Theme';
+import type { Theme } from '../../db/entity/Theme';
 import { logger } from '../../utils/logger/logger';
 
 export const generateThemeKeyboard = async (

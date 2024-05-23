@@ -1,6 +1,6 @@
 import { themeService } from '../../services/ThemeService';
 import { userService } from '../../services/UserService';
-import { MyContext, MyConversation } from '../bot';
+import type { MyContext, MyConversation } from '../bot';
 import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
 export async function updateThemeConversion(

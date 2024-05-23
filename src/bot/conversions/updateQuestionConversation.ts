@@ -1,7 +1,7 @@
 import { questionService } from '../../services/QuestionService';
 import { themeService } from '../../services/ThemeService';
 import { userService } from '../../services/UserService';
-import { MyContext, MyConversation } from '../bot';
+import type { MyContext, MyConversation } from '../bot';
 import { generateQuestionKeyboard } from '../keyboards/generateQuestionKeyboard';
 import { generateThemeKeyboard } from '../keyboards/generateThemeKeyboard';
 
