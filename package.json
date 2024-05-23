@@ -23,25 +23,25 @@
   "author": "Oleh Husak (https://github.com/oleh19127)",
   "license": "ISC",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.5.3",
-    "@types/node": "^20.11.25",
+    "@biomejs/biome": "1.7.3",
+    "@types/node": "^20.12.12",
     "husky": "^9.0.11",
     "nodemon": "^3.1.0",
     "prettier": "3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.4.2"
+    "typescript": "~5.4.5"
   },
   "dependencies": {
     "@grammyjs/conversations": "^1.2.0",
     "dotenv": "^16.4.5",
-    "grammy": "^1.21.1",
-    "pino": "^8.19.0",
+    "grammy": "^1.23.0",
+    "pino": "^8.21.0",
     "pino-pretty": "^10.3.1",
     "random-js": "^2.1.0",
-    "reflect-metadata": "^0.2.1",
+    "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20"
   }
